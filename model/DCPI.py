@@ -194,8 +194,7 @@ class ModifiedSwinTransformer(nn.Module):
 
 def create_model():
     # 加载预训练模型
-    base_model = timm.create_model('swin_tiny_patch4_window7_224', pretrained=False)
-    base_model.load_state_dict(torch.load('./model/model_weights.pth'))
+    base_model = timm.create_model('swin_tiny_patch4_window7_224', pretrained=True)
 
 
     dim = [base_model.embed_dim, base_model.embed_dim, base_model.embed_dim * 2, base_model.embed_dim * 4]
