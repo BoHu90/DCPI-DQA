@@ -1,6 +1,4 @@
-import torch
 from torch import nn
-from torchvision import models
 
 class Bottleneck(nn.Module):
     expansion = 4
@@ -39,7 +37,7 @@ class Bottleneck(nn.Module):
         return out
 
 class ResNet(nn.Module):
-    def __init__(self, block, layers, pretrained=False):
+    def __init__(self, block, layers):
         super(ResNet, self).__init__()
         self.in_channels = 64
         self.conv1 = nn.Conv2d(1, 64, kernel_size=7, stride=2, padding=3, bias=False)
@@ -84,9 +82,6 @@ class ResNet(nn.Module):
                 for i in range(4)
             ]
         )
-
-        # if pretrained:
-            # self.load_pretrained_weights()
 
     def _make_layer(self, block, out_channels, blocks, stride=1):
         downsample = None
@@ -140,23 +135,7 @@ class ResNet(nn.Module):
 
         return y
 
-    def load_pretrained_weights(self):
-        # 加载官方预训练的模型（这里用的是 torchvision 提供的模型）
-        pretrained_model = models.resnet50(pretrained=True)
 
-        # 获取预训练模型的状态字典
-        pretrained_dict = pretrained_model.state_dict()
-
-        # 获取自定义模型的状态字典
-        model_dict = self.state_dict()
-
-        # 只加载那些在自定义模型中存在的预训练模型的权重
-        pretrained_dict = {k: v for k, v in pretrained_dict.items() if k in model_dict and v.shape == model_dict[k].shape}
-
-        # 更新自定义模型的状态字典
-        model_dict.update(pretrained_dict)
-        self.load_state_dict(model_dict)
-
-def DarkNet(num_classes=256):
+def DarkNet():
     return ResNet(Bottleneck, [3, 4, 6, 3])
 
