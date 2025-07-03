@@ -18,6 +18,9 @@ torchvision
 timm
 ```
 
+## Pretrain model weight
+[model_weights.pth](https://drive.google.com/drive/folders/1Kuwp1A4Cp_motDROqSdmJUu-Y4tr6Ykp?usp=sharing)
+
 ## Datasets
 [DHQ](https://www.terabox.com/chinese/sharing/link?surl=uK-uwnqHgOdj67y7JAC2Gg)
 
