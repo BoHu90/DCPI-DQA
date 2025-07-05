@@ -19,9 +19,7 @@ print(device)
 locations = [15, 8, 26, 11, 9, 13, 15, 23, 8, 20, 8, 11]
 
 def RMSE(list1, list2):
-    # 确保两个列表长度相同
     if len(list1) != len(list2): raise ValueError("两个列表长度不相同")
-    # 计算均方根误差
     mse = np.mean((np.array(list1) - np.array(list2)) ** 2)
     rmse = np.sqrt(mse)
 
@@ -42,7 +40,6 @@ class NetSolver(object):
         self.lr = config.lr
         self.weight_decay = config.weight_decay
         self.train_test_num = config.train_test_num
-        self.model_type = config.model_type
         self.flag = config.flag
 
         self.model_net = DCPI()
@@ -50,8 +47,6 @@ class NetSolver(object):
         self.model_net = nn.DataParallel(self.model_net).to(device)
         # self.model_net = self.model_net.to(device)
         self.model_net.train(True)
-
-        self.use_dark = config.use_dark
 
         self.l1_loss = nn.L1Loss().to(device)
         self.solver = torch.optim.Adam(self.model_net.parameters(), lr=self.lr, weight_decay=self.weight_decay)
@@ -97,8 +92,6 @@ class NetSolver(object):
             epoch_loss = []
             pre_scores = []
             scores = []
-            # if t >= 1:
-            #     self.train_data, self.test_data = self.__load__()
             time1 = time.time()
             for i, (dehaze, darkc, labels) in enumerate(self.train_data):
                 dehaze = dehaze.float().to(device)
@@ -109,7 +102,6 @@ class NetSolver(object):
 
                 pre_score = self.model_net(dehaze, darkc)
                 pre_scores = pre_scores + pre_score.cpu().squeeze(1).tolist()
-                # pre_score = self.model_net(dehaze)
 
                 scores = scores + labels.cpu().tolist()
                 loss = self.l1_loss(pre_score.squeeze(), labels.detach())
@@ -118,7 +110,6 @@ class NetSolver(object):
                 self.solver.step()
                 n = 0
                 if i == len(self.train_data) / 3 - 1 or i == (len(self.train_data) / 3) * 2 - 1 and n<=15:
-                # if i == len(self.train_data) / 2 - 1 and r <= :
                     self.scheduler.step()
                     n+=1
                 if ((i + 1) % 100) == 0 and i != 0:
@@ -143,13 +134,13 @@ class NetSolver(object):
             self.scheduler.step()
 
         dict = result[0]
-        for headers in sorted(dict.keys()):  # 把字典的键取出来
+        for headers in sorted(dict.keys()):
             headname.append(headers)
 
         with open('%s%d_%s_%s_round%d_results.csv' % (self.flag, self.version, self.model_type, self.dataset, round + 1)
                 , 'w', newline='', encoding='utf-8') as f:
-            writer = csv.DictWriter(f, fieldnames=headname)  # 提前预览列名，当下面代码写入数据时，会将其一一对应。
-            writer.writeheader()  # 写入列名
+            writer = csv.DictWriter(f, fieldnames=headname)
+            writer.writeheader()
             writer.writerows(result)
 
         print('Best test SRCC %f, PLCC %f' % (best_srcc, best_plcc))
@@ -167,7 +158,6 @@ class NetSolver(object):
 
             pre_score = self.model_net(dehaze, darkc)
             pre_scores = pre_scores + pre_score.cpu().tolist()
-            # pre_score = self.model_net(dehaze)
 
             scores = scores + labels.cpu().tolist()
         pre_scores = np.reshape(np.array(pre_scores), (-1, self.test_patch_num))
