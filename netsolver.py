@@ -137,7 +137,7 @@ class NetSolver(object):
         for headers in sorted(dict.keys()):
             headname.append(headers)
 
-        with open('%s%d_%s_%s_round%d_results.csv' % (self.flag, self.version, self.model_type, self.dataset, round + 1)
+        with open('%s_round%d_results.csv' % (self.dataset, round + 1)
                 , 'w', newline='', encoding='utf-8') as f:
             writer = csv.DictWriter(f, fieldnames=headname)
             writer.writeheader()
